@@ -1,6 +1,6 @@
 /**
 
-  @mainpage Coding Conventions
+  @page coding_conventions Coding Conventions
 
   Use the following code conventions when contributing to OpenMS.
 
@@ -28,19 +28,19 @@
 
   Matching pairs of opening and closing curly braces should be set to the same column. See the following example:
 
-    @code{cpp}
-      while (continue == true)
+  @code{cpp}
+    while (continue == true)
+    {
+      for (int i = 0; i < 10; i++)
       {
-        for (int i = 0; i < 10; i++)
-        {
-          ...
-        }
-        if (x < 7)
-        {
-          ....
-        }
+        ...
       }
-    @endcode
+      if (x < 7)
+      {
+        ....
+      }
+    }
+  @endcode
 
   The main reason for this rule is to avoid constructions like:
 
@@ -88,103 +88,6 @@
   @endcode
 
   This is safe because the first statement in each else branch is used, which is itself braced by the if branch.
-
-  @section classes Classes
-
-  The following section outlines the class requirements with examples.
-
-  @subsection class_requirements Class requirements
-
-  Each OpenMS class should provide the following interface:
-
-  @code{cpp}
-    class OPENMS_DLLAPI Test
-    {
-      public:
-
-        // default constructor
-        Test();
-        // copy constructor
-        Test(const Test& test);
-        // destructor
-        virtual ~Test();
-        // assignment operator
-        Test& operator=(const Test& test)
-        {
-          //ALWAYS CHECK FOR SELF ASSIGNMENT!
-          if (this == &test) return *this;
-          //...
-          return *this;
-        }
-    };
-  @endcode
-
-  However, the following exceptions exist:
-
-  <li>Default constructor: Can be omitted when the class is entirely dependent on some information or another class. In this case you should declare the default constructor private.</li>
-  <li>Destructor: Should be a virtual function, unless you have a very good reason why it shouldn't (e.g., saving a <code>vtable</code> pointer.) Otherwise a delete invocation on a pointer to a base class will call the wrong destructor. View more details <a href="https://isocpp.org/wiki/faq/virtual-functions#virtual-dtors">here</a></li>
-  <li>Copy constructor: Can be omitted when it will not be used anyway, e.g. for classes that represent an algorithm. In this case you should declare the copy constructor private.</li>
-  <li>Assignment operator: Can be omitted when it will not be used anyway, e.g. for classes that represent an algorithm. In this case, you should declare the assignment operator <code>private</code>. The <code>OPENMS_DLLAPI</code> macro on the first line is required for correctly building the DLL. The correct usage of this macro is explained in the OpenMS C++ guide.</li>
-
-  @subsection example_class_files Example class files
-  In OpenMS, every <code>.h</code> file must be accompanied by a <code>.cpp</code> file, even if is just a ''dummy''. This way a global <code>make</code> will stumble across errors.
-
-  Here is an example of a correctly structured <code>.h</code> file:
-
-  @code{cpp}
-    ... copyright header, not shown ...
-    //
-    // --------------------------------------------------------------------------
-    // $Maintainer: Heinz Erhardt $
-    // $Authors: Heinz Erhardt $
-    // --------------------------------------------------------------------------
-
-    #pragma once
-
-    #include <OpenMS/CONCEPT/Types.h>
-    #include <functional>
-    #include <sstream>
-
-    namespace OpenMS
-    {
-       ... the actual code goes here ...
-    } // namespace OpenMS
-    #endif // OPENMS_KERNEL_DPEAK_H
-    @endcode
-
-    Here is an example of a correctly structured <code>.cpp</code> file:
-
-    @code{cpp}
-      ... copyright header, not shown ...
-      //
-      // --------------------------------------------------------------------------
-      // $Maintainer: Heinz Erhardt $
-      // $Authors: Heinz Erhardt $
-      // --------------------------------------------------------------------------
-
-      #include <OpenMS/KERNEL/DPeak.h>
-
-      namespace OpenMS
-      {
-         ... the actual code goes here ...
-      } // namespace OpenMS
-    @endcode
-
-    For template classes, default instances with common template arguments should be put into the <code>.cpp</code> file. The variable names of these instances start with <code>default_</code>. Here is an example for the <code>DPeak</code> class:
-
-    @code{cpp}
-      #include <OpenMS/KERNEL/DPeak.h>
-      namespace OpenMS
-      {
-        DPeak<1> default_dpeak_1;
-        DPeak<2> default_dpeak_2;
-      }
-    @endcode
-
-  The compiler does instantiate the template and detects errors at compile time, which saves time. Otherwise the error is detected much later, when the test is compiled.
-
-  For template classes, you should include an <code>_impl.h</code> file. An <code>_impl.h</code> file for a template is like a <code>.cpp</code> file for an ordinary class. Remember that the definition of a class or function template has to be known at its point of instantiation. Therefore, the implementation of a template is normally contained in the <code>.h</code> file. For template classes, declaration and definition are given in the same file. Things get more complicated when certain design patterns (e.g., the factory pattern) are used which lead to "circular dependencies". This is only a dependency of names, but it has to be resolved by separating declarations from definitions, at least for some of the member functions. In this case, a <code>.h</code> file can be written that contains most of the definitions as well as the declarations of the peculiar functions. Their definition is deferred to the <code>_impl.h</code> file ("impl" for "implementation"). The <code>_impl.h</code> file is included only if the peculiar member functions have to be instantiated. Otherwise the <code>.h</code> file should be sufficient. No <code>.h</code> file should include an <code>_impl.h file</code>.
-
 
   @section naming_conventions Naming conventions
 
@@ -268,13 +171,252 @@
 
   The correct capitalization of all data file extensions supported by OpenMS is documented in <code>FileHandler::NamesOfTypes[]</code>. The convention is to use only lowercase letters for file extensions. There are three exceptions: "ML" and "XML" are written in uppercase letters and "mzData" keeps its capital "D". Remember to keep this consistent when adding new data files or writing new TOPP tools or UTILS (use correct capitalization for file type restrictions, here).
 
-  @section exception_handling Exception handling
+  @section classes Classes
 
-  All exceptions used in OpenMS are derived from <code>Exception::Base</code> defined in <code>CONCEPT/Exception.h</code>. A default constructor should not be implemented for these exceptions. Instead, the constructor of all derived exceptions should have the following signature:
+  The following section outlines the class requirements with examples.
+
+  @subsection class_requirements Class requirements
+
+  Each OpenMS class should provide the following interface:
+
+  @code{cpp}
+    class OPENMS_DLLAPI Test
+    {
+      public:
+
+        // default constructor
+        Test();
+        // copy constructor
+        Test(const Test& test);
+        // destructor
+        virtual ~Test();
+        // assignment operator
+        Test& operator=(const Test& test)
+        {
+          //ALWAYS CHECK FOR SELF ASSIGNMENT!
+          if (this == &test) return *this;
+          //...
+          return *this;
+        }
+    };
+  @endcode
+
+  However, the following exceptions exist:
+  <ul>
+  <li>Default constructor: Can be omitted when the class is entirely dependent on some information or another class. In this case you should declare the default constructor private.</li>
+  <li>Destructor: Should be a virtual function, unless you have a very good reason why it shouldn't (e.g., saving a <code>vtable</code> pointer.) Otherwise a delete invocation on a pointer to a base class will call the wrong destructor. View more details <a href="https://isocpp.org/wiki/faq/virtual-functions#virtual-dtors">here</a></li>
+  <li>Copy constructor: Can be omitted when it will not be used anyway, e.g. for classes that represent an algorithm. In this case you should declare the copy constructor private.</li>
+  <li>Assignment operator: Can be omitted when it will not be used anyway, e.g. for classes that represent an algorithm. In this case, you should declare the assignment operator <code>private</code>. The <code>OPENMS_DLLAPI</code> macro on the first line is required for correctly building the DLL. The correct usage of this macro is explained in the OpenMS C++ guide.</li>
+  </ul>
+
+  @subsection example_class_files Example class files
+  In OpenMS, every <code>.h</code> file must be accompanied by a <code>.cpp</code> file, even if is just a ''dummy''. This way a global <code>make</code> will stumble across errors.
+
+  Here is an example of a correctly structured <code>.h</code> file:
+
+  @code{cpp}
+    ... copyright header, not shown ...
+    //
+    // --------------------------------------------------------------------------
+    // $Maintainer: Heinz Erhardt $
+    // $Authors: Heinz Erhardt $
+    // --------------------------------------------------------------------------
+
+    #pragma once
+
+    #include <OpenMS/CONCEPT/Types.h>
+    #include <functional>
+    #include <sstream>
+
+    namespace OpenMS
+    {
+       ... the actual code goes here ...
+    } // namespace OpenMS
+    #endif // OPENMS_KERNEL_DPEAK_H
+    @endcode
+
+    Here is an example of a correctly structured <code>.cpp</code> file:
+
+    @code{cpp}
+      ... copyright header, not shown ...
+      //
+      // --------------------------------------------------------------------------
+      // $Maintainer: Heinz Erhardt $
+      // $Authors: Heinz Erhardt $
+      // --------------------------------------------------------------------------
+
+      #include <OpenMS/KERNEL/DPeak.h>
+
+      namespace OpenMS
+      {
+         ... the actual code goes here ...
+      } // namespace OpenMS
+    @endcode
+
+    For template classes, default instances with common template arguments should be put into the <code>.cpp</code> file. The variable names of these instances start with <code>default_</code>. Here is an example for the <code>DPeak</code> class:
+
+    @code{cpp}
+      #include <OpenMS/KERNEL/DPeak.h>
+      namespace OpenMS
+      {
+        DPeak<1> default_dpeak_1;
+        DPeak<2> default_dpeak_2;
+      }
+    @endcode
+
+  The compiler does instantiate the template and detects errors at compile time, which saves time. Otherwise the error is detected much later, when the test is compiled.
+
+  For template classes, you should include an <code>_impl.h</code> file. An <code>_impl.h</code> file for a template is like a <code>.cpp</code> file for an ordinary class. Remember that the definition of a class or function template has to be known at its point of instantiation. Therefore, the implementation of a template is normally contained in the <code>.h</code> file. For template classes, declaration and definition are given in the same file. Things get more complicated when certain design patterns (e.g., the factory pattern) are used which lead to "circular dependencies". This is only a dependency of names, but it has to be resolved by separating declarations from definitions, at least for some of the member functions. In this case, a <code>.h</code> file can be written that contains most of the definitions as well as the declarations of the peculiar functions. Their definition is deferred to the <code>_impl.h</code> file ("impl" for "implementation"). The <code>_impl.h</code> file is included only if the peculiar member functions have to be instantiated. Otherwise the <code>.h</code> file should be sufficient. No <code>.h</code> file should include an <code>_impl.h file</code>.
+
+  @section general_rules General rules
+
+  The following section discusses rules around the use of primitives, namespaces, accessors to members and the STL.
+
+  @subsection primitive_types Primitive types
+
+  OpenMS uses its own type names for primitive types. Use only the types defined in <code>OpenMS/include/OpenMS/CONCEPT/Types.h</code>.
+
+  @subsection namespaces Namespaces
+
+  The main OpenMS classes are implemented in the namespace OpenMS. Auxiliary classes are implemented in <code>OpenMS::Internal</code>. There are some other namespaces e.g. for constants and exceptions.
+
+  Importing a whole namespace in a header files is forbidden. For example:
+
+  @code{cpp}
+    // sample.h
+  using namespace std; //< Don't do this at home!
+  @endcode
+
+  Using the directive on C++ standard library datatypes in header files is forbidden. For example:
+
+  @code{cpp}
+    // sample.h
+    using std::vector; //< Don't do this shorthand!
+    void sampleFunction1(vector &v1); //< bad: Shorthand leads to a confusing datatype. Don't do this.
+    void sampleFunction2(std::vector &v1); //< good: Full namespacing of datatype prevents confusion. Be explicit.
+  @endcode
+
+  This could lead to name clashes when OpenMS is used together with other libraries. In source files (<code>.cpp</code>) it is however allowed.
+
+  @subsection accessors_to_members Accessors to members
+
+  Accessors to protected or private members of a class are implemented as a pair of get-method and set-method. This is necessary as accessors that return mutable references to a member cannot be wrapped with Python.
+
+  @code{cpp}
+    class Test
+    {
+      public:
+        // always implement a non-mutable get-method
+        UInt getMember() const
+        {
+          return member_;
+        }
+
+        // always implement a set-method
+        void setMember(UInt name)
+        {
+          member_ = name;
+        }
+
+      protected:
+        UInt member_;
+    };
+  @endcode
+
+  For members that are too large to be read with the get-method or modified and written back with the set-method, an additional non-const get-method can be implemented.
+
+  For primitive types, a non-const get-method is strictly forbidden. For more complex types it should be present only when necessary.
 
   @code{cpp}
 
+    class Test
+    {
+      public:
+        const vector<String>& getMember() const
+        {
+          return member_;
+        }
+
+        void setMember(const vector<String>& name)
+        {
+          member_ = name;
+        }
+
+        // if absolutely necessary implement a mutable get-method
+        vector<String>& getMember()
+        {
+          return member_;
+        }
+      protected:
+        vector<String> member_;
+    };
+
   @endcode
+
+  @subsection use_of_the_stl Use of the STL
+
+  Many OpenMS classes base on <code>STL</code> classes. However, only the C++ Standard Library part of the <code>STL</code> must be used. This means that SGI extensions like <code>hash_set</code>, <code>hash_multiset</code>, <code>hash_map</code> and <code>hash_multimap</code> are not allowed; use <code>std::unordered_...</code> instead.
+
+  @section exceptions Exceptions
+
+  The following section describes how to handle exceptions and create exception classes.
+
+  @subsection exception_handling Exception handling
+
+  No OpenMS program should dump a core if an error occurs. Instead, it should attempt to die as gracefully as possible. Furthermore, as OpenMS is a framework rather than an application, it should give the programmer ways to catch and correct errors. The recommended procedure to handle - even fatal - errors is to throw an exception. Uncaught exception will result in a call to abort thereby terminating the program.
+
+  @subsection throw_exceptions Throw exceptions
+
+  To simplify debugging, use the following throw directive for exceptions:
+
+  @code{cpp}
+    throw AnyException(__FILE__, __LINE__, OPENMS_PRETTY_FUNCTION);
+  @endcode
+
+  <code>__FILE__</code> and <code>__LINE__</code> are standard-defined preprocessor macros. The macro <code>OPENMS_PRETTY_FUNCTION</code> wraps Boost's version of a platform independent <code>__PRETTY_FUNCTION__</code> macro, that works similar to a <code>char*</code> and contains the type signature of the function as well as its bare name, if the GNU compiler is being used. It might differ on other platforms. <code>Exception::Base</code> provides methods (<code>getFile</code>, <code>getLine</code>, <code>getFunction</code>) that allow the localisation of the exception's cause.
+
+  @subsection catch_exceptions Catch exceptions
+
+  The standard way to catch an exception should be by reference (and not by value), as shown below:
+
+  @code{cpp}
+    try
+    {
+      // some code which might throw
+    }
+    catch (Exception& e)
+    {
+      // Handle the exception, then possibly re-throw it:
+      // throw; // the modified e
+    }
+  @endcode
+
+  @subsection specify_exceptions Specify exceptions
+
+  Don't use the throw statement to specify exceptions, as this forces the compiler to check that only the specified exceptions are thrown. This check not only increases the runtime, but may prevent efficient optimization of the code by the compiler.
+
+  However, thrown exceptions must be documented to tell the user which exceptions can be caught.
+
+  @code{cpp}
+    /**
+    @brief Silly function
+
+    @exception Exception::Foo is always thrown
+    */
+    void myFunction()
+    {
+      throw Foo(__FILE__, __LINE__, OPENMS_PRETTY_FUNCTION);
+    }
+  @endcode
+
+  @subsection exception_classes Exception classes
+  All exceptions used in OpenMS are derived from <code>Exception::Base</code> defined in <code>CONCEPT/Exception.h</code>. A default constructor should not be implemented for these exceptions. Instead, the constructor of all derived exceptions should have the following signature:
+
+  @code{cpp}
+    AnyException(const char* file, int line, const char* function[, ...]);
+  @endcode
+
+  Additional arguments are possible but should provide default values (see <code>IndexOverflow</code> for an example).
 
   @section how_to_expose_classes_and_methods_to_python How to expose classes and methods to python
 
@@ -403,13 +545,13 @@
   @subsection add_comments_to_code Add comments to code
   The code for each  <code>.cpp</code> file has to be commented. Each piece of code in OpenMS has to contain at least 5% of comments. The use of:
 
-  @code
+  @code{cpp}
     // Comment text
   @endcode
 
   instead of:
 
-  @code
+  @code{cpp}
     /* Comment text */
   @endcode
 
@@ -421,7 +563,7 @@
 
   @section testing Testing
 
-  View the <a href="/how-to-write-tests.html">guidelines</a> to learn how to write tests.
+  View the @subpage how-to-write-tests guidelines to learn how to write tests.
 
   @section revision_control Revision control
   OpenMS uses <a href="https://git-scm.com/">git</a> to manage different versions of the source files. For easier identification of the responsible person each OpenMS file contains the <code>$Maintainer:$</code> string in the preamble.
