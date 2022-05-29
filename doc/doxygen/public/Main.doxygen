@@ -93,7 +93,7 @@
         Development:
         <UL>
           <LI> @subpage coding_conventions
-          <LI> <a class="el" href="https://github.com/OpenMS/OpenMS/wiki/Developer-FAQ" target="_blank">Developer FAQ (online)</a>
+          <LI> @subpage developer_faq
           <LI> @subpage cpp_guide
           <LI> @subpage how_to_write_tests
         </UL>
