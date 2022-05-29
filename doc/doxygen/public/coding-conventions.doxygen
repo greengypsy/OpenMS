@@ -105,7 +105,7 @@
 
   The usage of underscores in names has two different meanings: A trailing "_" at the end indicates that something is protected or private to a class. Apart from that, different parts of a name are sometimes separated by an underscore, and sometimes separated by capital letters.
 
-  > **_NOTE:_** According to the C++ standard, names that start with an underscore are reserved for internal purposes of the language and its standard library, so you should never use them.
+  @note According to the C++ standard, names that start with an underscore are reserved for internal purposes of the language and its standard library, so you should never use them.
 
   @subsection classes_types_namespaces Classes/Types/Namespaces
 
